@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useGeolocation } from '@/lib/hooks/useGeolocation'
-import { MapPinIcon } from '@heroicons/react/24/solid'
+import { MapPin, AlertCircle } from 'lucide-react'
 import { hapticFeedback } from '@/lib/utils/haptic'
 
 interface GeolocationButtonProps {
@@ -20,16 +20,14 @@ export const GeolocationButton: React.FC<GeolocationButtonProps> = ({ onLocation
     getCurrentPosition()
   }
 
-  // ✅ CORRECTION : Envoyer la position dès qu'elle est disponible
   useEffect(() => {
     if (hasRequestedLocation && latitude && longitude && !loading) {
       console.log('📍 [GeolocationButton] Position trouvée:', { lat: latitude, lng: longitude })
       onLocationFound({ lat: latitude, lng: longitude })
-      setHasRequestedLocation(false) // Réinitialiser
+      setHasRequestedLocation(false)
     }
   }, [latitude, longitude, loading, hasRequestedLocation, onLocationFound])
 
-  // Afficher l'erreur temporairement
   useEffect(() => {
     if (error) {
       setShowError(true)
@@ -43,24 +41,29 @@ export const GeolocationButton: React.FC<GeolocationButtonProps> = ({ onLocation
       <button
         onClick={handleClick}
         disabled={loading}
-        className="w-14 h-14 rounded-full bg-white dark:bg-dark-surface shadow-xl border-2 border-neutral-200 dark:border-dark-border hover:shadow-2xl transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center group"
+        className="w-12 h-12 rounded-xl bg-white dark:bg-dark-surface shadow-sm border border-neutral-200 dark:border-neutral-800 hover:shadow-md transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center group hover:border-primary dark:hover:border-primary"
         title="Utiliser ma position"
       >
         {loading ? (
-          <div className="w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         ) : (
-          <MapPinIcon className="w-6 h-6 text-primary group-hover:text-primary-600 transition-colors" />
+          <MapPin className="w-5 h-5 text-primary group-hover:text-primary/90 transition-colors" strokeWidth={1.5} />
         )}
       </button>
 
       {showError && (
-        <div className="absolute bottom-16 right-0 w-64 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 shadow-lg">
-          <p className="text-sm text-red-700 dark:text-red-300 font-medium">
-            {error}
-          </p>
-          <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-            Activez la géolocalisation dans les paramètres de votre navigateur
-          </p>
+        <div className="absolute bottom-16 right-0 w-64 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-3 shadow-sm animate-fade-up">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+            <div>
+              <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                {error}
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                Activez la géolocalisation dans les paramètres de votre navigateur
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

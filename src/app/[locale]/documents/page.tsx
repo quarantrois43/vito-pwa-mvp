@@ -1,28 +1,31 @@
 'use client'
 
 import { DocumentsList } from '@/components/documents/DocumentsList'
-import { DocumentTextIcon } from '@heroicons/react/24/solid'
+import { FileText } from 'lucide-react'
 
 export default function DocumentsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-50 dark:from-dark-bg dark:via-dark-surface dark:to-dark-bg pt-14 sm:pt-16">
-      <div className="container mx-auto px-4 py-8 sm:py-12 max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-3xl mb-4 sm:mb-6 shadow-xl">
-            <DocumentTextIcon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+    <div className="min-h-screen bg-gradient-to-b from-neutral-25 via-white to-neutral-25 dark:from-dark-bg dark:via-dark-surface/95 dark:to-dark-bg pt-16 pb-20">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+        {/* Hero section */}
+        <div className="text-center mb-12 sm:mb-16 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 shadow-lg">
+            <FileText className="w-10 h-10 text-white" strokeWidth={1.5} />
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 font-display">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 dark:text-white mb-4 tracking-tight font-sans">
             Documents & Ressources
           </h1>
           
-          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Guides PAMF, consignes de sécurité et documentation disponibles hors ligne
-          </p>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 leading-relaxed tracking-wide font-sans">
+              Guides PAMF, consignes de sécurité et documentation technique disponible hors ligne
+            </p>
+            <div className="h-px w-24 mx-auto mt-6 bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent"></div>
+          </div>
         </div>
 
-        {/* Liste des documents */}
+        {/* Documents list */}
         <DocumentsList />
       </div>
     </div>

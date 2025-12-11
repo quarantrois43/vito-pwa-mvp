@@ -3,19 +3,20 @@
 import { ResellerCard } from '@/components/resellers/ResellerCard'
 import type { Reseller } from '@/types/reseller'
 import type { DistanceResult } from '@/lib/hooks/useDistanceMatrix'
+import { MapPin } from 'lucide-react'
 
 interface ResellersListProps {
   resellers: Reseller[]
   selectedReseller: Reseller | null
   onSelectReseller: (reseller: Reseller) => void
-  distances?: Record<string, DistanceResult> // ✅ CORRECTION : Ajouter la prop distances
+  distances?: Record<string, DistanceResult>
 }
 
 export const ResellersList: React.FC<ResellersListProps> = ({
   resellers,
   selectedReseller,
   onSelectReseller,
-  distances, // ✅ CORRECTION : Recevoir les distances
+  distances,
 }) => {
   return (
     <div className="p-4 space-y-4">
@@ -26,14 +27,16 @@ export const ResellersList: React.FC<ResellersListProps> = ({
           isSelected={selectedReseller?.id === reseller.id}
           onClick={() => onSelectReseller(reseller)}
           delay={index * 0.05}
-          distance={distances?.[reseller.id]} // ✅ CORRECTION : Passer la distance
+          distance={distances?.[reseller.id]}
         />
       ))}
 
       {resellers.length === 0 && (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">🗺️</div>
-          <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+            <MapPin className="w-8 h-8 text-neutral-400 dark:text-neutral-600" strokeWidth={1.5} />
+          </div>
+          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 tracking-tight">
             Aucun revendeur trouvé
           </h3>
           <p className="text-neutral-600 dark:text-neutral-400">

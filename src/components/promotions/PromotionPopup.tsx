@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Promotion } from '@/types/promotion'
-import { 
-  XMarkIcon, 
-  TagIcon, 
-  ClockIcon,
-  SparklesIcon
-} from '@heroicons/react/24/solid'
+import { X, Tag, Clock, Sparkles } from 'lucide-react'
 import { hapticFeedback } from '@/lib/utils/haptic'
 
 interface PromotionPopupProps {
@@ -16,12 +11,24 @@ interface PromotionPopupProps {
 }
 
 export const PromotionPopup: React.FC<PromotionPopupProps> = ({ promotion, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(false) // ← Changé à false par défaut
   const [timeLeft, setTimeLeft] = useState('')
   const [isExpired, setIsExpired] = useState(false)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
+    // Vérifier si c'est la première ouverture
+    const hasPopupBeenShown = localStorage.getItem('promotionPopupShown')
+    
+    if (!hasPopupBeenShown) {
+      setIsVisible(true)
+      localStorage.setItem('promotionPopupShown', 'true')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return // ← Important : ne pas exécuter le timer si invisible
+
     const calculateTimeLeft = () => {
       const now = new Date().getTime()
       const end = new Date(promotion.validUntil).getTime()
@@ -44,44 +51,34 @@ export const PromotionPopup: React.FC<PromotionPopupProps> = ({ promotion, onClo
 
     calculateTimeLeft()
     const interval = setInterval(calculateTimeLeft, 1000)
-
-    // Auto-close après 15 secondes
-    const autoCloseTimer = setTimeout(() => {
-      handleClose()
-    }, 15000)
+    const autoCloseTimer = setTimeout(() => handleClose(), 15000)
 
     return () => {
       clearInterval(interval)
       clearTimeout(autoCloseTimer)
     }
-  }, [promotion.validUntil])
+  }, [promotion.validUntil, isVisible]) // ← Ajouté isVisible comme dépendance
 
   const handleCopyCode = () => {
     if (!promotion.code) return
-    
     hapticFeedback('medium')
     navigator.clipboard.writeText(promotion.code)
     setCopied(true)
-    
     setTimeout(() => setCopied(false), 2000)
   }
 
   const handleClose = () => {
     hapticFeedback('light')
     setIsVisible(false)
-    setTimeout(() => {
-      onClose()
-    }, 300)
+    setTimeout(() => onClose(), 300)
   }
 
   if (!isVisible) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
       <div className="relative w-full max-w-md animate-slide-up">
-        {/* Contenu principal */}
-        <div className="bg-white dark:bg-dark-surface rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 dark:border-dark-border">
-          {/* Image en pleine hauteur */}
+        <div className="bg-white dark:bg-dark-surface rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
           <div className="relative h-64 overflow-hidden">
             <img
               src={promotion.image}
@@ -90,45 +87,40 @@ export const PromotionPopup: React.FC<PromotionPopupProps> = ({ promotion, onClo
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
             
-            {/* Badge discount si > 0 */}
             {promotion.discount > 0 && (
               <div className="absolute top-4 right-4 z-10">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent to-accent-600 rounded-2xl blur-md opacity-75" />
-                  <div className="relative bg-gradient-to-br from-accent to-accent-600 text-white rounded-2xl px-5 py-3 shadow-2xl">
-                    <div className="text-3xl font-bold leading-none">-{promotion.discount}%</div>
-                    <div className="text-xs font-semibold opacity-90 mt-1">OFFRE</div>
+                  <div className="absolute inset-0 bg-primary/30 rounded-2xl blur-md" />
+                  <div className="relative bg-primary text-white rounded-2xl px-5 py-3 shadow-lg">
+                    <div className="text-2xl font-bold leading-none font-sans">-{promotion.discount}%</div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Titre sur image */}
             <div className="absolute bottom-4 left-4 right-4 z-10">
-              <h2 className="text-2xl font-bold text-white mb-1 line-clamp-2">
+              <h2 className="text-xl font-semibold text-white mb-1 line-clamp-2 font-sans">
                 {promotion.title}
               </h2>
-              <p className="text-white/90 text-sm line-clamp-2">
+              <p className="text-white/90 text-sm line-clamp-2 font-sans">
                 {promotion.description}
               </p>
             </div>
           </div>
 
-          {/* Contenu sous l'image */}
           <div className="p-6">
-            {/* Timer et statut - Format digital strict */}
-            <div className="mb-8">
+            <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <ClockIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-primary" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 font-sans">
                       {isExpired ? 'Offre expirée' : 'Temps restant'}
                     </p>
                     {!isExpired && (
-                      <p className="text-lg font-bold text-neutral-900 dark:text-white font-mono tracking-tighter">
+                      <p className="text-lg font-semibold text-neutral-900 dark:text-white font-mono tracking-tight">
                         {timeLeft}
                       </p>
                     )}
@@ -136,55 +128,50 @@ export const PromotionPopup: React.FC<PromotionPopupProps> = ({ promotion, onClo
                 </div>
 
                 {promotion.isActive && !isExpired && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                    <SparklesIcon className="w-4 h-4" />
-                    <span className="text-sm font-semibold">Active</span>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                    <Sparkles className="w-4 h-4" strokeWidth={1.5} />
+                    <span className="text-sm font-medium font-sans">Active</span>
                   </div>
                 )}
               </div>
 
-              {/* Barre de progression du temps */}
               {!isExpired && (
                 <div className="h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-primary to-primary-600 rounded-full transition-all duration-1000"
+                    className="h-full bg-primary rounded-full transition-all duration-1000"
                     style={{ width: '75%' }}
                   />
                 </div>
               )}
             </div>
 
-            {/* Code promo - Élément principal */}
             {promotion.code && promotion.isActive && !isExpired && (
               <div className="relative group">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 font-sans">
                     Code promotionnel
                   </span>
                   <button
                     onClick={handleCopyCode}
-                    className="text-sm text-primary dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+                    className="text-sm text-primary hover:text-primary-600 transition-colors font-sans"
                   >
                     {copied ? 'Copié !' : 'Cliquez pour copier'}
                   </button>
                 </div>
                 
-                <button
-                  onClick={handleCopyCode}
-                  className="w-full"
-                >
+                <button onClick={handleCopyCode} className="w-full">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30 rounded-xl blur-sm group-hover:blur-md transition-all duration-300" />
-                    <div className="relative flex items-center justify-between p-4 bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-xl border-2 border-primary/20 dark:border-primary/30 group-hover:border-primary/40 dark:group-hover:border-primary/50 transition-all duration-300">
+                    <div className="absolute inset-0 bg-primary/10 rounded-xl blur-sm group-hover:blur transition-all duration-300" />
+                    <div className="relative flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/20 group-hover:border-primary/40 transition-all duration-300">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <TagIcon className="w-5 h-5 text-primary dark:text-primary-400" />
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Tag className="w-5 h-5 text-primary" strokeWidth={1.5} />
                         </div>
                         <div className="text-left">
-                          <div className="text-2xl font-bold text-primary dark:text-primary-400 font-mono">
+                          <div className="text-xl font-semibold text-primary font-mono">
                             {promotion.code}
                           </div>
-                          <div className="text-xs text-primary/70 dark:text-primary-300">
+                          <div className="text-xs text-primary/70 font-sans">
                             Valide jusqu'au {new Date(promotion.validUntil).toLocaleDateString('fr-FR')}
                           </div>
                         </div>
@@ -195,20 +182,18 @@ export const PromotionPopup: React.FC<PromotionPopupProps> = ({ promotion, onClo
               </div>
             )}
 
-            {/* Note */}
-            <p className="text-xs text-center text-neutral-500 dark:text-neutral-500 mt-8">
+            <p className="text-xs text-center text-neutral-500 dark:text-neutral-500 mt-6 font-sans">
               Fermez avec le bouton X en haut à droite
             </p>
           </div>
         </div>
 
-        {/* Bouton fermer (X en haut à droite) */}
         <button
           onClick={handleClose}
-          className="absolute -top-3 -right-3 w-10 h-10 bg-white dark:bg-dark-surface rounded-full shadow-lg border border-neutral-200 dark:border-dark-border flex items-center justify-center hover:scale-110 transition-transform"
+          className="absolute -top-3 -right-3 w-10 h-10 bg-white dark:bg-dark-surface rounded-full shadow-lg border border-neutral-200 dark:border-neutral-800 flex items-center justify-center hover:scale-110 transition-transform duration-200"
           aria-label="Fermer"
         >
-          <XMarkIcon className="w-5 h-5 text-neutral-700 dark:text-neutral-300" />
+          <X className="w-5 h-5 text-neutral-700 dark:text-neutral-300" strokeWidth={1.5} />
         </button>
       </div>
     </div>

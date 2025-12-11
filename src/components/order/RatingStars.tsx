@@ -1,7 +1,6 @@
 'use client'
 
-import { StarIcon } from '@heroicons/react/24/solid'
-import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline'
+import { Star } from 'lucide-react'
 
 interface RatingStarsProps {
   rating: number
@@ -32,35 +31,33 @@ export const RatingStars: React.FC<RatingStarsProps> = ({
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      {/* Étoiles pleines */}
       {[...Array(fullStars)].map((_, i) => (
-        <StarIcon 
+        <Star 
           key={`full-${i}`}
-          className={`${sizeClasses[size]} text-yellow-500 fill-yellow-500`}
+          className={`${sizeClasses[size]} text-amber-500 fill-amber-500`}
+          strokeWidth={1.5}
         />
       ))}
       
-      {/* Demi-étoile */}
       {hasHalfStar && (
         <div className="relative">
-          <StarOutlineIcon className={`${sizeClasses[size]} text-yellow-500`} />
+          <Star className={`${sizeClasses[size]} text-amber-500`} strokeWidth={1.5} />
           <div className="absolute inset-0 overflow-hidden" style={{ width: '50%' }}>
-            <StarIcon className={`${sizeClasses[size]} text-yellow-500 fill-yellow-500`} />
+            <Star className={`${sizeClasses[size]} text-amber-500 fill-amber-500`} strokeWidth={1.5} />
           </div>
         </div>
       )}
       
-      {/* Étoiles vides */}
       {[...Array(emptyStars)].map((_, i) => (
-        <StarOutlineIcon 
+        <Star 
           key={`empty-${i}`}
           className={`${sizeClasses[size]} text-neutral-300 dark:text-neutral-600`}
+          strokeWidth={1.5}
         />
       ))}
       
-      {/* Affichage numérique */}
       {showNumber && (
-        <span className="ml-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+        <span className="ml-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 font-sans">
           {rating.toFixed(1)}
           {reviewCount !== undefined && (
             <span className="text-neutral-500 dark:text-neutral-400 ml-1">

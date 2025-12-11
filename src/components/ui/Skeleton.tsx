@@ -15,12 +15,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   className,
   ...props
 }) => {
-  const baseClasses = 'animate-pulse bg-neutral-200 dark:bg-neutral-700'
+  const baseClasses = 'animate-pulse bg-neutral-200 dark:bg-neutral-800'
   
   const variantClasses = {
-    text: 'rounded h-4',
-    circular: 'rounded-full',
-    rectangular: 'rounded-lg',
+    text: 'rounded-xl h-4',
+    circular: 'rounded-xl',
+    rectangular: 'rounded-xl',
   }
 
   const style: React.CSSProperties = {
@@ -38,9 +38,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }
 
 export const SkeletonCard: React.FC = () => (
-  <div className="bg-white dark:bg-dark-surface rounded-xl p-4 border border-light-border dark:border-dark-border">
+  <div className="bg-white dark:bg-dark-surface rounded-xl p-6 border border-neutral-200 dark:border-neutral-800">
     <Skeleton variant="circular" width={48} height={48} className="mb-4" />
-    <Skeleton variant="text" className="mb-2" width="70%" />
+    <Skeleton variant="text" className="mb-3" width="70%" />
     <Skeleton variant="text" width="90%" />
     <Skeleton variant="text" width="60%" className="mt-4" />
   </div>

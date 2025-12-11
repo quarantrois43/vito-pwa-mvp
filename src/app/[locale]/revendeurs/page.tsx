@@ -7,7 +7,7 @@ import { MapFilters } from '@/components/resellers/MapFilters'
 import { GeolocationButton } from '@/components/resellers/GeolocationButton'
 import { TravelModeSelector } from '@/components/resellers/TravelModeSelector'
 import { GeolocationPrompt } from '@/components/resellers/GeolocationPrompt'
-import { MapPinIcon, ListBulletIcon, Squares2X2Icon } from '@heroicons/react/24/solid'
+import { MapPin, List, Grid3x3, Navigation, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import type { Reseller } from '@/types/reseller'
 import { resellers } from '@/data/resellersData'
 import { useDistanceMatrix, type TravelMode } from '@/lib/hooks/useDistanceMatrix'
@@ -26,7 +26,7 @@ export default function ResellersPage() {
   const [showGeolocationPrompt, setShowGeolocationPrompt] = useState(true)
   const [hasSkippedGeolocation, setHasSkippedGeolocation] = useState(false)
 
-  // ✅ CORRECTION : Charger depuis localStorage au démarrage
+  // Charger depuis localStorage au démarrage
   useEffect(() => {
     const loadUserLocation = () => {
       try {
@@ -44,7 +44,7 @@ export default function ResellersPage() {
     loadUserLocation()
   }, [])
 
-  // ✅ CORRECTION : Sauvegarder la position dans localStorage
+  // Sauvegarder la position dans localStorage
   const saveUserLocation = useCallback((location: { lat: number; lng: number }) => {
     try {
       localStorage.setItem('userLocation', JSON.stringify(location))
@@ -74,7 +74,7 @@ export default function ResellersPage() {
     }, 500)
   }, [saveUserLocation])
 
-  // ✅ CORRECTION : Fonction pour activer manuellement la géoloc
+  // Fonction pour activer manuellement la géoloc
   const handleEnableGeolocation = useCallback(() => {
     console.log('📍 Activation manuelle de la géolocalisation')
     setIsGeolocationLoading(true)
@@ -90,7 +90,7 @@ export default function ResellersPage() {
     }, 100)
   }, [])
 
-  // ✅ CORRECTION : Fonction pour ignorer la géolocalisation
+  // Fonction pour ignorer la géolocalisation
   const handleSkipGeolocation = useCallback(() => {
     console.log('📍 Géolocalisation ignorée par l\'utilisateur')
     setHasSkippedGeolocation(true)
@@ -165,12 +165,12 @@ export default function ResellersPage() {
     setTravelMode(mode)
   }, [])
 
-  // ✅ CORRECTION : Afficher le prompt seulement si pas encore de position ET pas encore ignoré
+  // Afficher le prompt seulement si pas encore de position ET pas encore ignoré
   const shouldShowPrompt = showGeolocationPrompt && !userLocation && !hasSkippedGeolocation
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-dark-bg pt-14 sm:pt-16">
-      {/* ✅ CORRECTION : Nouveau prompt de géolocalisation */}
+      {/* Nouveau prompt de géolocalisation */}
       {shouldShowPrompt && (
         <GeolocationPrompt
           onEnable={handleEnableGeolocation}
@@ -180,19 +180,19 @@ export default function ResellersPage() {
       )}
 
       {/* Header */}
-      <div className="bg-white dark:bg-dark-surface border-b border-neutral-200 dark:border-dark-border">
+      <div className="bg-white dark:bg-dark-surface border-b border-neutral-200 dark:border-neutral-800">
         <div className="container mx-auto px-4 py-6 sm:py-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white font-display">
+              <h1 className="text-3xl sm:text-4xl font-semibold text-neutral-900 dark:text-white tracking-tight">
                 Trouver un revendeur
               </h1>
-              <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-1">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                 {filteredResellers.length} point{filteredResellers.length > 1 ? 's' : ''} de vente à proximité
               </p>
               {userLocation && (
                 <p className="text-xs text-primary mt-1 flex items-center gap-1">
-                  <MapPinIcon className="w-3 h-3" />
+                  <MapPin className="w-3 h-3" strokeWidth={1.5} />
                   <span>
                     Position: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
                   </span>
@@ -206,36 +206,36 @@ export default function ResellersPage() {
               <div className="hidden lg:flex gap-2">
                 <button
                   onClick={() => setView('split')}
-                  className={`p-2 rounded-lg transition-all duration-300 ${
+                  className={`p-2 rounded-xl transition-all duration-300 ${
                     view === 'split'
-                      ? 'bg-primary text-white shadow-lg scale-105'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:shadow-md'
+                      ? 'bg-primary text-white'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                   title="Vue partagée"
                 >
-                  <Squares2X2Icon className="w-5 h-5" />
+                  <Grid3x3 className="w-5 h-5" strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={() => setView('list')}
-                  className={`p-2 rounded-lg transition-all duration-300 ${
+                  className={`p-2 rounded-xl transition-all duration-300 ${
                     view === 'list'
-                      ? 'bg-primary text-white shadow-lg scale-105'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:shadow-md'
+                      ? 'bg-primary text-white'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                   title="Liste seule"
                 >
-                  <ListBulletIcon className="w-5 h-5" />
+                  <List className="w-5 h-5" strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={() => setView('map')}
-                  className={`p-2 rounded-lg transition-all duration-300 ${
+                  className={`p-2 rounded-xl transition-all duration-300 ${
                     view === 'map'
-                      ? 'bg-primary text-white shadow-lg scale-105'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:shadow-md'
+                      ? 'bg-primary text-white'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                   title="Carte seule"
                 >
-                  <MapPinIcon className="w-5 h-5" />
+                  <MapPin className="w-5 h-5" strokeWidth={1.5} />
                 </button>
               </div>
               
@@ -243,16 +243,16 @@ export default function ResellersPage() {
               <div className="flex lg:hidden gap-2">
                 <button
                   onClick={() => setView(view === 'map' ? 'list' : 'map')}
-                  className={`p-2 rounded-lg transition-all duration-300 ${
+                  className={`p-2 rounded-xl transition-all duration-300 ${
                     view === 'map'
-                      ? 'bg-primary text-white shadow-lg scale-105'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:shadow-md'
+                      ? 'bg-primary text-white'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
                   }`}
                 >
                   {view === 'map' ? (
-                    <ListBulletIcon className="w-5 h-5" />
+                    <List className="w-5 h-5" strokeWidth={1.5} />
                   ) : (
-                    <MapPinIcon className="w-5 h-5" />
+                    <MapPin className="w-5 h-5" strokeWidth={1.5} />
                   )}
                 </button>
               </div>
@@ -268,12 +268,12 @@ export default function ResellersPage() {
           </div>
 
           {/* Section des distances avec design amélioré */}
-          <div className="bg-white dark:bg-dark-surface rounded-2xl p-4 border border-neutral-200 dark:border-dark-border shadow-sm">
+          <div className="bg-white dark:bg-dark-surface rounded-xl p-4 border border-neutral-200 dark:border-neutral-800 shadow-sm">
             <div className="space-y-4">
               {/* En-tête avec statut GPS amélioré */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-semibold text-neutral-900 dark:text-white">
+                  <h3 className="text-base font-medium text-neutral-900 dark:text-white">
                     Calcul des distances
                   </h3>
                   <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
@@ -283,15 +283,15 @@ export default function ResellersPage() {
                 
                 <div className="flex items-center gap-2">
                   {userLocation ? (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 rounded-full border border-green-200 dark:border-green-800">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                      <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                         GPS activé
                       </span>
                     </div>
                   ) : isGeolocationLoading ? (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-200 dark:border-blue-800">
-                      <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                      <Loader2 className="w-3 h-3 text-blue-600 dark:text-blue-400 animate-spin" strokeWidth={1.5} />
                       <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
                         En cours...
                       </span>
@@ -299,15 +299,15 @@ export default function ResellersPage() {
                   ) : !hasSkippedGeolocation ? (
                     <button
                       onClick={handleEnableGeolocation}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full border border-primary/20 dark:border-primary/30 transition-all hover:scale-105 active:scale-95"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 rounded-xl border border-primary/20 dark:border-primary/30 transition-all duration-300"
                     >
-                      <MapPinIcon className="w-3 h-3 text-primary" />
+                      <MapPin className="w-3 h-3 text-primary" strokeWidth={1.5} />
                       <span className="text-xs font-medium text-primary">
                         Activer GPS
                       </span>
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-full border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                       <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
                         GPS désactivé
                       </span>
@@ -328,8 +328,8 @@ export default function ResellersPage() {
               <div className="space-y-2 pt-2">
                 {isGeolocationLoading && (
                   <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 animate-pulse">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
+                      <Loader2 className="w-4 h-4 text-blue-600 dark:text-blue-400 animate-spin" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
@@ -344,8 +344,8 @@ export default function ResellersPage() {
                 
                 {isLoadingDistances && userLocation && (
                   <div className="flex items-center gap-3 p-3 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20 dark:border-primary/30">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                      <Loader2 className="w-4 h-4 text-primary animate-spin" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-primary dark:text-primary-400">
@@ -361,10 +361,8 @@ export default function ResellersPage() {
                 {distanceError && (
                   <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-xl bg-red-100 dark:bg-red-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <AlertCircle className="w-3 h-3 text-red-600 dark:text-red-400" strokeWidth={1.5} />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-red-800 dark:text-red-300">
@@ -376,7 +374,7 @@ export default function ResellersPage() {
                         {!userLocation && (
                           <button
                             onClick={handleEnableGeolocation}
-                            className="mt-2 text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors"
+                            className="mt-2 text-xs bg-red-600 text-white px-3 py-1.5 rounded-xl hover:bg-red-700 transition-all duration-300"
                           >
                             Réessayer avec GPS
                           </button>
@@ -389,10 +387,8 @@ export default function ResellersPage() {
                 {!userLocation && hasSkippedGeolocation && (
                   <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-xl bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <AlertCircle className="w-3 h-3 text-amber-600 dark:text-amber-400" strokeWidth={1.5} />
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
@@ -403,7 +399,7 @@ export default function ResellersPage() {
                         </p>
                         <button
                           onClick={handleEnableGeolocation}
-                          className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded-lg hover:bg-amber-700 transition-colors"
+                          className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded-xl hover:bg-amber-700 transition-all duration-300"
                         >
                           Activer maintenant
                         </button>
@@ -413,18 +409,16 @@ export default function ResellersPage() {
                 )}
                 
                 {distances && Object.keys(distances).length > 0 && userLocation && (
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
+                      <div className="w-6 h-6 rounded-xl bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <CheckCircle className="w-3 h-3 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                        <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
                           {Object.keys(distances).length} distances calculées
                         </p>
-                        <p className="text-sm text-green-700/80 dark:text-green-400/80">
+                        <p className="text-sm text-emerald-700/80 dark:text-emerald-400/80">
                           Les revendeurs sont triés par proximité
                         </p>
                       </div>
@@ -467,14 +461,14 @@ export default function ResellersPage() {
         {/* Mode LIST (Liste seule) */}
         {view === 'list' && (
           <div className="h-full flex flex-col">
-            <div className="bg-white dark:bg-dark-surface p-4 border-b border-neutral-200 dark:border-dark-border">
+            <div className="bg-white dark:bg-dark-surface p-4 border-b border-neutral-200 dark:border-neutral-800">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-neutral-900 dark:text-white">
                     {sortedResellers.length} revendeur{sortedResellers.length > 1 ? 's' : ''}
                   </p>
                   {userLocation && distances && Object.keys(distances).length > 0 && (
-                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
                       Triés par distance
                     </p>
                   )}
@@ -495,26 +489,22 @@ export default function ResellersPage() {
             </div>
 
             {sortedResellers.length > PAGE_SIZE && (
-              <div className="flex justify-center gap-2 p-4 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-dark-border">
+              <div className="flex justify-center gap-2 p-4 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-neutral-800">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => p - 1)}
-                  className="px-4 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  <Navigation className="w-4 h-4 rotate-180" strokeWidth={1.5} />
                   Précédent
                 </button>
                 <button
                   disabled={currentPage === Math.ceil(sortedResellers.length / PAGE_SIZE)}
                   onClick={() => setCurrentPage((p) => p + 1)}
-                  className="px-4 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
+                  className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
                 >
                   Suivant
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <Navigation className="w-4 h-4" strokeWidth={1.5} />
                 </button>
               </div>
             )}
@@ -548,14 +538,14 @@ export default function ResellersPage() {
             </div>
           ) : (
             <div className="h-full flex flex-col">
-              <div className="bg-white dark:bg-dark-surface p-4 border-b border-neutral-200 dark:border-dark-border">
+              <div className="bg-white dark:bg-dark-surface p-4 border-b border-neutral-200 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-neutral-900 dark:text-white">
                       {sortedResellers.length} revendeur{sortedResellers.length > 1 ? 's' : ''}
                     </p>
                     {userLocation && distances && Object.keys(distances).length > 0 && (
-                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
                         Triés par distance
                       </p>
                     )}
@@ -573,26 +563,22 @@ export default function ResellersPage() {
               </div>
 
               {sortedResellers.length > PAGE_SIZE && (
-                <div className="flex justify-center gap-2 p-4 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-dark-border">
+                <div className="flex justify-center gap-2 p-4 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-neutral-800">
                   <button
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => p - 1)}
-                    className="px-4 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
+                    <Navigation className="w-4 h-4 rotate-180" strokeWidth={1.5} />
                     Précédent
                   </button>
                   <button
                     disabled={currentPage === Math.ceil(sortedResellers.length / PAGE_SIZE)}
                     onClick={() => setCurrentPage((p) => p + 1)}
-                    className="px-4 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 disabled:opacity-50 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 flex items-center gap-2"
                   >
                     Suivant
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <Navigation className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                 </div>
               )}

@@ -18,18 +18,18 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
 
     return (
-      <div className="w-full">
+      <div className="w-full font-sans">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-light-text-primary dark:text-dark-text-primary mb-2"
+            className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-light-text-tertiary dark:text-dark-text-tertiary">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500">
               {leftIcon}
             </div>
           )}
@@ -37,35 +37,35 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={`
-              w-full rounded-lg border bg-white dark:bg-dark-surface
-              px-4 py-2.5 text-base
+              w-full rounded-xl border bg-white dark:bg-dark-surface
+              px-4 py-3 text-sm
               ${leftIcon ? 'pl-10' : ''}
               ${rightIcon ? 'pr-10' : ''}
               ${
                 error
-                  ? 'border-error focus:ring-error'
-                  : 'border-light-border dark:border-dark-border focus:ring-primary'
+                  ? 'border-red-600 focus:border-red-600'
+                  : 'border-neutral-300 dark:border-neutral-700 focus:border-primary'
               }
-              text-light-text-primary dark:text-dark-text-primary
-              placeholder:text-light-text-tertiary dark:placeholder:text-dark-text-tertiary
-              focus:outline-none focus:ring-2 focus:ring-offset-0
+              text-neutral-900 dark:text-white
+              placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+              focus:outline-none focus:ring-2 focus:ring-primary/20
               disabled:opacity-50 disabled:cursor-not-allowed
-              transition-all duration-200
+              transition-all duration-300
               ${className || ''}
             `}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-light-text-tertiary dark:text-dark-text-tertiary">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500">
               {rightIcon}
             </div>
           )}
         </div>
         {error && (
-          <p className="mt-1.5 text-sm text-error">{error}</p>
+          <p className="mt-1.5 text-sm text-red-600">{error}</p>
         )}
         {helperText && !error && (
-          <p className="mt-1.5 text-sm text-light-text-secondary dark:text-dark-text-secondary">
+          <p className="mt-1.5 text-sm text-neutral-500 dark:text-neutral-400">
             {helperText}
           </p>
         )}

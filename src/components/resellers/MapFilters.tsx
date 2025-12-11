@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { Reseller } from '@/types/reseller'
+import { RefreshCw } from 'lucide-react'
 
 interface MapFiltersProps {
   resellers: Reseller[]
@@ -13,10 +14,8 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [selectedCity, setSelectedCity] = useState<string>('all')
 
-  // Générer la liste unique des villes disponibles
   const cities = Array.from(new Set(resellers.map(r => r.city))).sort()
 
-  // Mémoiser la fonction de filtrage
   const applyFilters = useCallback(() => {
     let filtered = resellers
 
@@ -37,7 +36,6 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
     onFilterChange(filtered)
   }, [selectedType, selectedServices, selectedCity, resellers, onFilterChange])
 
-  // Appeler applyFilters quand les filtres changent
   useEffect(() => {
     applyFilters()
   }, [applyFilters])
@@ -50,19 +48,17 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
     )
   }
 
-  // Réinitialiser tous les filtres
   const resetFilters = () => {
     setSelectedType('all')
     setSelectedServices([])
     setSelectedCity('all')
   }
 
-  // Vérifier si des filtres sont actifs
   const hasActiveFilters = selectedType !== 'all' || selectedServices.length > 0 || selectedCity !== 'all'
 
   return (
     <div className="w-full">
-      {/* Desktop: Bouton à droite */}
+      {/* Desktop */}
       <div className="hidden md:flex items-center justify-between">
         <div className="flex flex-wrap gap-3 overflow-x-auto py-2">
           {/* Type */}
@@ -70,7 +66,7 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value as any)}
-              className="px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 tracking-tight"
             >
               <option value="all">Types Distrib</option>
               <option value="Quincaillerie">Quincailleries</option>
@@ -86,7 +82,7 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 tracking-tight"
               >
                 <option value="all">Toutes les villes</option>
                 {cities.map(city => (
@@ -101,10 +97,10 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
             <button
               key={service}
               onClick={() => toggleService(service)}
-              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 border shrink-0 ${
                 selectedServices.includes(service)
-                  ? 'bg-primary text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
               }`}
             >
               {service}
@@ -112,21 +108,19 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
           ))}
         </div>
 
-        {/* Bouton Réinitialiser à droite sur desktop */}
+        {/* Bouton Réinitialiser */}
         {hasActiveFilters && (
           <button
             onClick={resetFilters}
-            className="px-4 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all shrink-0 flex items-center gap-2"
+            className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-300 shrink-0 flex items-center gap-2 hover:border-neutral-300 dark:hover:border-neutral-600"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
             Réinitialiser
           </button>
         )}
       </div>
 
-      {/* Mobile: Tout en colonne */}
+      {/* Mobile */}
       <div className="md:hidden space-y-3">
         <div className="flex flex-wrap gap-2">
           {/* Type */}
@@ -134,7 +128,7 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value as any)}
-              className="w-full px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 tracking-tight"
             >
               <option value="all">Types Distrib</option>
               <option value="Quincaillerie">Quincailleries</option>
@@ -144,13 +138,13 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
             </select>
           </div>
 
-          {/* Ville - CORRECTION : Toujours visible sur mobile */}
+          {/* Ville */}
           {cities.length > 0 && (
             <div className="flex-1 min-w-[140px]">
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 tracking-tight"
               >
                 <option value="all">Toutes les villes</option>
                 {cities.map(city => (
@@ -161,16 +155,16 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
           )}
         </div>
 
-        {/* Services sur mobile - en grille */}
+        {/* Services en grille */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {(['Bouteille 9kg', 'Bouteille 13kg', 'Kit Fatapera', 'Détendeur', 'Pack connectique'] as const).map(service => (
             <button
               key={service}
               onClick={() => toggleService(service)}
-              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 border ${
                 selectedServices.includes(service)
-                  ? 'bg-primary text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600'
               }`}
             >
               {service}
@@ -178,14 +172,15 @@ export const MapFilters: React.FC<MapFiltersProps> = ({ resellers, onFilterChang
           ))}
         </div>
 
-        {/* Bouton Réinitialiser centré sur mobile */}
+        {/* Bouton Réinitialiser mobile */}
         {hasActiveFilters && (
           <div className="flex justify-center">
             <button
               onClick={resetFilters}
-              className="px-4 py-1.5 rounded-xl border border-neutral-200 dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all"
+              className="px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-dark-surface text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-300 flex items-center gap-2 hover:border-neutral-300 dark:hover:border-neutral-600"
             >
-              Réinitialiser les filtres
+              <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
+              Réinitialiser
             </button>
           </div>
         )}

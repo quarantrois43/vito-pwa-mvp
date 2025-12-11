@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MoonIcon, SunIcon } from '@heroicons/react/24/solid'
+import { Moon, Sun } from 'lucide-react'
 
 export const ThemeSwitcher: React.FC = () => {
   const [isDark, setIsDark] = useState(false)
@@ -30,19 +30,21 @@ export const ThemeSwitcher: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-dark-surface border-1 border-neutral-200 dark:border-dark-border hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+      className="w-10 h-10 rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800 hover:shadow-md transition-all duration-300 hover:scale-105 flex items-center justify-center"
       aria-label="Toggle theme"
     >
-      <div className="relative w-5 h-5 sm:w-6 sm:h-6">
-        <SunIcon
-          className={`absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 text-orange-500 transition-all duration-500 ${
-            isDark ? 'opacity-0 rotate-180 scale-0' : 'opacity-100 rotate-0 scale-100'
+      <div className="relative w-5 h-5">
+        <Sun
+          className={`absolute inset-0 w-5 h-5 text-amber-600 transition-all duration-300 ${
+            isDark ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
           }`}
+          strokeWidth={1.5}
         />
-        <MoonIcon
-          className={`absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 transition-all duration-500 ${
-            isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-180 scale-0'
+        <Moon
+          className={`absolute inset-0 w-5 h-5 text-indigo-600 transition-all duration-300 ${
+            isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
           }`}
+          strokeWidth={1.5}
         />
       </div>
     </button>

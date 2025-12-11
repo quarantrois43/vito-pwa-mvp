@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid'
+import { ChevronRight, Home } from 'lucide-react'
 
 export const Breadcrumb: React.FC = () => {
   const pathname = usePathname()
@@ -24,15 +24,15 @@ export const Breadcrumb: React.FC = () => {
   }
 
   return (
-    <nav className="bg-white dark:bg-dark-surface border-b border-neutral-200 dark:border-dark-border mt-14 sm:mt-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <ol className="flex items-center gap-2 text-sm">
+    <nav className="bg-white dark:bg-dark-surface border-b border-neutral-200 dark:border-neutral-800 mt-14 sm:mt-16">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl py-3">
+        <ol className="flex items-center gap-2 text-sm font-sans">
           <li>
             <Link
               href={`/${locale}`}
-              className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors"
+              className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 hover:text-primary transition-all duration-300"
             >
-              {/*<HomeIcon className="w-4 h-4" />*/}
+              <Home className="w-4 h-4" strokeWidth={1.5} />
               <span>Accueil</span>
             </Link>
           </li>
@@ -44,7 +44,7 @@ export const Breadcrumb: React.FC = () => {
 
             return (
               <li key={segment} className="flex items-center gap-2">
-                <ChevronRightIcon className="w-4 h-4 text-neutral-400" />
+                <ChevronRight className="w-4 h-4 text-neutral-400" strokeWidth={1.5} />
                 {isLast ? (
                   <span className="text-neutral-900 dark:text-white font-semibold">
                     {label}
@@ -52,7 +52,7 @@ export const Breadcrumb: React.FC = () => {
                 ) : (
                   <Link
                     href={path}
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors"
+                    className="text-neutral-600 dark:text-neutral-400 hover:text-primary transition-all duration-300"
                   >
                     {label}
                   </Link>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowDownTrayIcon } from '@heroicons/react/24/solid'
+import { Download } from 'lucide-react'
 
 export const InstallButton: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
@@ -42,15 +42,10 @@ export const InstallButton: React.FC = () => {
   return (
     <button
       onClick={handleInstall}
-      className="group relative overflow-hidden bg-gradient-to-r from-primary to-primary-600 text-white rounded-full px-3 sm:px-4 py-2 flex items-center gap-1.5 sm:gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+      className="group bg-primary text-white rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-      
-      <ArrowDownTrayIcon className="w-4 h-4 sm:w-5 sm:h-5 relative z-10" />
-      
-      {/* Texte caché sur très petit mobile, visible sur sm+ */}
-      <span className="hidden xs:inline text-xs sm:text-sm font-semibold relative z-10">Installer</span>
-      <span className="xs:hidden text-xs font-semibold relative z-10">Installer</span>
+      <Download className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
+      <span className="text-sm font-semibold">Installer</span>
     </button>
   )
 }

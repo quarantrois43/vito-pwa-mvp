@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { PromotionCard } from '@/components/promotions/PromotionsCard'
-import { ChevronLeftIcon, ChevronRightIcon, FunnelIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid'
+import { Filter, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react'
 import type { Promotion } from '@/types/promotion'
 import { promotions, filters, zones, sortOptions, ITEMS_PER_PAGE } from '@/data/promotions'
 import { useRouter } from 'next/navigation'
@@ -16,32 +16,22 @@ export const PromotionsList: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false)
 
   const filteredPromos = promotions.filter(promo => {
-    // Filtre par statut
     if (activeFilter === 'active' && !promo.isActive) return false
     if (activeFilter === 'expired' && promo.isActive) return false
-
-    // Filtre par zones
     if (selectedZones.length > 0) {
       const hasMatchingZone = selectedZones.some(zone => promo.zones.includes(zone))
       if (!hasMatchingZone) return false
     }
-
     return true
   })
 
-  // Tri des promotions
   const sortedPromos = [...filteredPromos].sort((a, b) => {
     switch (sortBy) {
-      case 'discount_desc':
-        return b.discount - a.discount
-      case 'discount_asc':
-        return a.discount - b.discount
-      case 'newest':
-        return new Date(b.validUntil).getTime() - new Date(a.validUntil).getTime()
-      case 'expiring':
-        return new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
-      default:
-        return 0
+      case 'discount_desc': return b.discount - a.discount
+      case 'discount_asc': return a.discount - b.discount
+      case 'newest': return new Date(b.validUntil).getTime() - new Date(a.validUntil).getTime()
+      case 'expiring': return new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
+      default: return 0
     }
   })
 
@@ -68,25 +58,24 @@ export const PromotionsList: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* En-tête avec contrôles */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">
+          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white font-sans mb-2">
             {sortedPromos.length} promotion{sortedPromos.length !== 1 ? 's' : ''} disponible{sortedPromos.length !== 1 ? 's' : ''}
           </h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 font-sans">
             Filtrez par zone et triez par réduction
           </p>
         </div>
 
         <div className="flex gap-3">
-          {/* Bouton filtres avancés */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border hover:border-primary transition-colors"
+            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800 hover:border-primary transition-colors duration-200 font-sans"
           >
-            <FunnelIcon className="w-4 h-4" />
+            <Filter className="w-4 h-4" strokeWidth={1.5} />
             <span className="text-sm font-medium">Filtres</span>
             {selectedZones.length > 0 && (
               <span className="w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">
@@ -95,14 +84,13 @@ export const PromotionsList: React.FC = () => {
             )}
           </button>
 
-          {/* Sélecteur de tri */}
           <select
             value={sortBy}
             onChange={(e) => {
               setSortBy(e.target.value)
               setCurrentPage(1)
             }}
-            className="px-4 py-2 rounded-full bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-4 py-3 rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors font-sans"
           >
             {sortOptions.map(option => (
               <option key={option.id} value={option.id}>
@@ -113,17 +101,17 @@ export const PromotionsList: React.FC = () => {
         </div>
       </div>
 
-      {/* Filtres avancés (zones) */}
+      {/* Advanced filters */}
       {showFilters && (
-        <div className="bg-white dark:bg-dark-surface rounded-2xl p-6 shadow-lg border border-neutral-200 dark:border-dark-border animate-fade-in">
-          <h3 className="font-semibold text-neutral-800 dark:text-white mb-4">Filtrer par zone</h3>
+        <div className="bg-white dark:bg-dark-surface rounded-2xl p-6 shadow-lg border border-neutral-200 dark:border-neutral-800 animate-fade-in">
+          <h3 className="font-semibold text-neutral-800 dark:text-white mb-4 font-sans">Filtrer par zone</h3>
           <div className="flex flex-wrap gap-2">
             {zones.map(zone => (
               <button
                 key={zone.id}
                 onClick={() => handleZoneToggle(zone.value)}
                 className={`
-                  px-4 py-2 rounded-full text-sm font-medium transition-all
+                  px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 font-sans
                   ${selectedZones.includes(zone.value)
                     ? 'bg-primary text-white'
                     : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
@@ -136,7 +124,7 @@ export const PromotionsList: React.FC = () => {
             {selectedZones.length > 0 && (
               <button
                 onClick={() => setSelectedZones([])}
-                className="px-4 py-2 rounded-full text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="px-4 py-2 rounded-xl text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 font-sans transition-colors"
               >
                 Effacer
               </button>
@@ -145,65 +133,59 @@ export const PromotionsList: React.FC = () => {
         </div>
       )}
 
-      {/* Filtres rapides */}
-      <div className="flex gap-2 sm:gap-3 mb-6 overflow-x-auto pb-2 pl-4 -ml-4">
+      {/* Quick filters */}
+      <div className="flex gap-2 mb-6 pb-2 justify-center">
         {filters.map((filter) => (
           <button
             key={filter.id}
             onClick={() => handleFilterChange(filter.id)}
             className={`
-              flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full
-              font-semibold text-sm sm:text-base whitespace-nowrap
-              transition-all duration-300 ml-4
+              relative px-6 py-3 rounded-xl font-medium text-sm transition-all duration-300
+              after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2
+              after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300
+              hover:after:w-full font-sans
               ${
                 activeFilter === filter.id
-                  ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white'
-                  : 'bg-white dark:bg-dark-surface text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-dark-border hover:border-orange-500 hover:text-orange-500'
+                  ? 'text-primary after:w-full'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:text-primary hover:bg-neutral-50 dark:hover:bg-neutral-900'
               }
             `}
           >
-            <span className="text-lg">{filter.icon}</span>
-            <span>{filter.label}</span>
+            {filter.label}
           </button>
         ))}
       </div>
 
-      {/* Indicateurs de filtres actifs */}
+      {/* Active filters indicators */}
       {(selectedZones.length > 0 || sortBy !== 'discount_desc') && (
         <div className="flex flex-wrap gap-2 mb-4">
           {selectedZones.length > 0 && (
-            <div className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm flex items-center gap-1">
-              <span>Zones: {selectedZones.length} sélectionnée(s)</span>
-              <button
-                onClick={() => setSelectedZones([])}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                ×
+            <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl text-sm flex items-center gap-2 border border-blue-200 dark:border-blue-800">
+              <MapPin className="w-4 h-4" strokeWidth={1.5} />
+              <span>Zones: {selectedZones.length}</span>
+              <button onClick={() => setSelectedZones([])} className="text-blue-500 hover:text-blue-700">
+                <X className="w-3 h-3" strokeWidth={2} />
               </button>
             </div>
           )}
           {sortBy !== 'discount_desc' && (
-            <div className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm flex items-center gap-1">
+            <div className="px-3 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-xl text-sm flex items-center gap-2 border border-purple-200 dark:border-purple-800">
               <span>Tri: {sortOptions.find(s => s.id === sortBy)?.label}</span>
-              <button
-                onClick={() => setSortBy('discount_desc')}
-                className="text-purple-500 hover:text-purple-700"
-              >
-                ×
+              <button onClick={() => setSortBy('discount_desc')} className="text-purple-500 hover:text-purple-700">
+                <X className="w-3 h-3" strokeWidth={2} />
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* Grille de promotions */}
+      {/* Promotions grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {paginatedPromos.map((promo, index) => (
           <PromotionCard
             key={promo.id}
             promotion={promo}
-            delay={index * 0.1}
-            //ViewDetails={() => handleViewDetails(promo.id)}
+            delay={index * 0.05}
           />
         ))}
       </div>
@@ -214,9 +196,9 @@ export const PromotionsList: React.FC = () => {
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="p-3 rounded-full bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="p-3 rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800 hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <ChevronLeftIcon className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
           </button>
 
           <div className="flex items-center gap-2">
@@ -224,10 +206,10 @@ export const PromotionsList: React.FC = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`w-10 h-10 rounded-full font-semibold transition-all duration-200 ${
+                className={`w-10 h-10 rounded-xl font-semibold transition-all duration-200 font-sans ${
                   currentPage === page
-                    ? 'bg-gradient-to-r from-orange-500 to-pink-600 text-white scale-110'
-                    : 'bg-white dark:bg-dark-surface text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-dark-border hover:border-primary hover:text-primary'
+                    ? 'bg-primary text-white'
+                    : 'bg-white dark:bg-dark-surface text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 hover:border-primary hover:text-primary'
                 }`}
               >
                 {page}
@@ -238,9 +220,9 @@ export const PromotionsList: React.FC = () => {
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="p-3 rounded-full bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="p-3 rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800 hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <ChevronRightIcon className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
       )}
@@ -248,11 +230,13 @@ export const PromotionsList: React.FC = () => {
       {/* Empty state */}
       {filteredPromos.length === 0 && (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">🎁</div>
-          <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center">
+            <TagIcon className="w-10 h-10 text-neutral-400" strokeWidth={1} />
+          </div>
+          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 font-sans">
             Aucune promotion ne correspond à vos critères
           </h3>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-6 font-sans">
             Essayez de modifier vos filtres ou consultez toutes les promotions
           </p>
           <button
@@ -261,7 +245,7 @@ export const PromotionsList: React.FC = () => {
               setSelectedZones([])
               setSortBy('discount_desc')
             }}
-            className="px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-600 text-white rounded-full font-medium hover:opacity-90 transition-opacity"
+            className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-colors duration-200 font-sans"
           >
             Voir toutes les promotions
           </button>
@@ -270,3 +254,6 @@ export const PromotionsList: React.FC = () => {
     </div>
   )
 }
+
+// Add this import for the TagIcon used in empty state
+import { Tag as TagIcon } from 'lucide-react'

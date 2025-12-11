@@ -4,23 +4,23 @@ import React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 const cardVariants = cva(
-  'rounded-xl transition-all duration-200',
+  'rounded-xl transition-all duration-300',
   {
     variants: {
       variant: {
-        default: 'bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border',
-        elevated: 'bg-white dark:bg-dark-surface shadow-lg hover:shadow-xl',
-        outlined: 'border-2 border-primary bg-transparent',
-        gradient: 'bg-gradient-to-br from-primary to-primary-600 text-white',
+        default: 'bg-white dark:bg-dark-surface border border-neutral-200 dark:border-neutral-800',
+        elevated: 'bg-white dark:bg-dark-surface shadow-sm',
+        outlined: 'border border-primary bg-transparent',
+        gradient: 'bg-gradient-to-br from-primary/10 to-primary/5',
       },
       padding: {
         none: '',
-        sm: 'p-3',
-        md: 'p-4',
-        lg: 'p-6',
+        sm: 'p-4',
+        md: 'p-6',
+        lg: 'p-8',
       },
       interactive: {
-        true: 'cursor-pointer hover:scale-[1.02] active:scale-[0.98]',
+        true: 'cursor-pointer hover:border-primary/50 hover:shadow-md',
       },
     },
     defaultVariants: {
@@ -53,14 +53,14 @@ Card.displayName = 'Card'
 export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   ...props
-}) => <div className={`mb-4 ${className || ''}`} {...props} />
+}) => <div className={`mb-6 ${className || ''}`} {...props} />
 
 export const CardTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
   className,
   ...props
 }) => (
   <h3
-    className={`text-xl font-semibold text-light-text-primary dark:text-dark-text-primary ${
+    className={`text-xl font-semibold text-neutral-900 dark:text-white tracking-tight ${
       className || ''
     }`}
     {...props}
@@ -72,9 +72,7 @@ export const CardDescription: React.FC<React.HTMLAttributes<HTMLParagraphElement
   ...props
 }) => (
   <p
-    className={`text-sm text-light-text-secondary dark:text-dark-text-secondary ${
-      className || ''
-    }`}
+    className={`text-sm text-neutral-600 dark:text-neutral-400 ${className || ''}`}
     {...props}
   />
 )
@@ -87,4 +85,4 @@ export const CardContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 export const CardFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   ...props
-}) => <div className={`mt-4 ${className || ''}`} {...props} />
+}) => <div className={`mt-6 ${className || ''}`} {...props} />

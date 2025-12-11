@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { Reseller } from '@/types/reseller'
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader'
+import { AlertCircle, Navigation } from 'lucide-react'
 
 interface ResellerMapProps {
   resellers: Reseller[]
@@ -89,7 +90,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
       markersRef.current.push(marker)
     })
 
-    // ✅ CORRECTION : Centrer sur les markers seulement si pas de position utilisateur
+    // Centrer sur les markers seulement si pas de position utilisateur
     if (markersRef.current.length > 0 && mapInstanceRef.current && !isInitialCenteringDoneRef.current) {
       const bounds = new google.maps.LatLngBounds()
       markersRef.current.forEach(marker => {
@@ -113,7 +114,6 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
     console.log(`📍 ${markersRef.current.length} markers créés`)
   }, [resellers, onSelectReseller])
 
-  // ✅ CORRECTION : Centrer sur la position utilisateur
   const centerOnUserLocation = useCallback((location: { lat: number; lng: number }) => {
     if (!mapInstanceRef.current) return
 
@@ -213,14 +213,14 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
     initMap()
   }, [createMarkers, resellers])
 
-  // ✅ CORRECTION : Mettre à jour les markers quand les revendeurs changent
+  // Mettre à jour les markers quand les revendeurs changent
   useEffect(() => {
     if (mapInstanceRef.current && !isLoading) {
       createMarkers()
     }
   }, [resellers, isLoading, createMarkers])
 
-  // ✅ CORRECTION : Centrer sur la position utilisateur quand elle change
+  // Centrer sur la position utilisateur quand elle change
   useEffect(() => {
     if (userLocation && mapInstanceRef.current && !isLoading) {
       centerOnUserLocation(userLocation)
@@ -281,7 +281,8 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
     return (
       <div className="h-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">{error}</p>
+          <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" strokeWidth={1.5} />
+          <p className="text-red-600 dark:text-red-400 font-medium mb-2">{error}</p>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             Vérifiez votre clé API Google Maps
           </p>
@@ -295,7 +296,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 z-10">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-neutral-600 dark:text-neutral-400">Chargement de la carte...</p>
           </div>
         </div>
@@ -308,7 +309,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
       
       {/* Debug info */}
       {process.env.NODE_ENV === 'development' && !isLoading && (
-        <div className="absolute bottom-4 left-4 bg-black/80 text-white text-xs p-2 rounded-lg z-20">
+        <div className="absolute bottom-4 left-4 bg-black/80 text-white text-xs p-2 rounded-xl z-20">
           <div>Markers: {markersRef.current.length}</div>
           <div>User loc: {userLocation ? '✓' : '✗'}</div>
           <div>Centered: {isInitialCenteringDoneRef.current ? '✓' : '✗'}</div>

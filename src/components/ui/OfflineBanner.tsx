@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { WifiIcon } from '@heroicons/react/24/outline'
+import { WifiOff } from 'lucide-react'
 
 export const OfflineBanner: React.FC = () => {
   const [isOnline, setIsOnline] = useState(true)
@@ -24,9 +24,9 @@ export const OfflineBanner: React.FC = () => {
   if (isOnline) return null
 
   return (
-    <div className="bg-warning text-white px-4 py-2 text-center text-sm font-medium flex items-center justify-center gap-2">
-      <WifiIcon className="w-5 h-5" />
-      Vous êtes hors ligne. Certaines fonctionnalités sont limitées.
+    <div className="bg-amber-600 text-white px-4 py-3 text-center text-sm font-medium flex items-center justify-center gap-2 font-sans">
+      <WifiOff className="w-5 h-5" strokeWidth={1.5} />
+      <span>Vous êtes hors ligne. Certaines fonctionnalités sont limitées.</span>
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { Document } from '@/types/document'
-import { ArrowDownTrayIcon, EyeIcon, DocumentTextIcon, CloudArrowDownIcon } from '@heroicons/react/24/solid'
+import { Download, Eye, FileText, Cloud } from 'lucide-react'
 import { hapticFeedback } from '@/lib/utils/haptic'
 
 interface DocumentCardProps {
@@ -18,7 +18,6 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onClick, d
     e.stopPropagation()
     hapticFeedback('medium')
     
-    // Télécharger le PDF
     const link = window.document.createElement('a')
     link.href = document.url
     link.download = `${document.title}.pdf`
@@ -35,67 +34,73 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({ document, onClick, d
       onClick={handleView}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative overflow-hidden bg-white dark:bg-dark-surface rounded-2xl p-5 sm:p-6 cursor-pointer transition-all duration-500 border border-neutral-200 dark:border-dark-border hover:border-transparent animate-slide-up"
+      className="group relative overflow-hidden bg-white dark:bg-dark-surface rounded-2xl p-6 cursor-pointer transition-all duration-300 border border-neutral-100 dark:border-neutral-800 hover:border-primary/30 animate-slide-up"
       style={{
         animationDelay: `${delay}s`,
-        boxShadow: isHovered
-          ? '0 20px 50px -15px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,139,127,0.1)'
-          : '0 4px 15px -2px rgba(0,0,0,0.08)',
+        boxShadow: isHovered 
+          ? '0 20px 40px -20px rgba(0, 139, 127, 0.15), 0 0 0 1px rgba(0, 139, 127, 0.05)'
+          : '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)'
       }}
     >
-      {/* Gradient au hover */}
+      {/* Gradient overlay */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 transition-all duration-700"
+        className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/2 transition-opacity duration-500"
         style={{
           opacity: isHovered ? 1 : 0,
         }}
       />
 
       <div className="relative z-10">
-        {/* Icône + Badge offline */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="w-14 h-14 rounded-xl bg-primary/10 dark:bg-primary-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <DocumentTextIcon className="w-7 h-7 text-primary" />
+        {/* Header with icon and offline badge */}
+        <div className="flex items-start justify-between mb-5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
+            <FileText className="w-6 h-6 text-primary" strokeWidth={1.5} />
           </div>
           
           {document.offline && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">
-              <CloudArrowDownIcon className="w-3.5 h-3.5" />
-              <span>Offline</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 text-xs font-medium font-sans">
+              <Cloud className="w-3.5 h-3.5" strokeWidth={1.5} />
+              <span>Disponible hors ligne</span>
             </div>
           )}
         </div>
 
-        {/* Titre et description */}
-        <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+        {/* Title and description */}
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2.5 line-clamp-2 leading-snug tracking-tight group-hover:text-primary transition-colors duration-300 font-sans">
           {document.title}
         </h3>
         
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-2">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-5 line-clamp-2 leading-relaxed font-sans">
           {document.description}
         </p>
 
-        {/* Métadonnées */}
-        <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 mb-4">
-          <span>{document.pages} pages</span>
-          <span>{document.size}</span>
+        {/* Metadata */}
+        <div className="flex items-center justify-between text-sm text-neutral-500 dark:text-neutral-500 mb-6 font-medium font-sans">
+          <span className="flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700"></span>
+            {document.pages} pages
+          </span>
+          <span className="px-2.5 py-1 rounded-md bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400">
+            {document.size}
+          </span>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={handleView}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary-600 transition-colors duration-200"
+            className="flex-1 flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-600 text-white font-medium text-sm hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 font-sans"
           >
-            <EyeIcon className="w-4 h-4" />
-            <span>Voir</span>
+            <Eye className="w-4 h-4" strokeWidth={2} />
+            <span>Consulter</span>
           </button>
           
           <button
             onClick={handleDownload}
-            className="flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200"
+            className="flex items-center justify-center w-12 h-12 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all duration-200 active:scale-95"
           >
-            <ArrowDownTrayIcon className="w-5 h-5" />
+            <Download className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
       </div>
