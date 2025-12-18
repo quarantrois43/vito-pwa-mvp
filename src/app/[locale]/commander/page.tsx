@@ -1,33 +1,106 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Truck } from 'lucide-react'
+import { Truck, Loader2 } from 'lucide-react'
 import { DeliveryCompanyCard } from '@/components/order/DeliveryCompanyCard'
 import { 
-  deliveryCompanies, 
+  type DeliveryCompany,
   filterTypes, 
   filterCompanies, 
   sortCompanies 
 } from '@/data/deliveryCompanies'
 
+const API_URL = 'https://vito-backend-supabase.onrender.com/api/v1';
+
 export default function DeliveryPage() {
+  const [deliveryCompanies, setDeliveryCompanies] = useState<DeliveryCompany[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'rating' | 'deliveryTime' | 'name' | 'reviewCount'>('rating')
-  const [filteredCompanies, setFilteredCompanies] = useState(deliveryCompanies)
+  const [filteredCompanies, setFilteredCompanies] = useState<DeliveryCompany[]>([])
 
   const stats = {
     totalCompanies: deliveryCompanies.length,
-    averageRating: Number((deliveryCompanies.reduce((acc, c) => acc + c.rating, 0) / deliveryCompanies.length).toFixed(1)),
-    fastestDelivery: Math.min(...deliveryCompanies.map(c => parseInt(c.deliveryTime.match(/\d+/)?.[0] || '999'))),
-    verifiedCount: deliveryCompanies.filter(c => c.verified).length
+    averageRating: deliveryCompanies.length > 0 
+      ? Number((deliveryCompanies.reduce((acc, c) => acc + c.rating, 0) / deliveryCompanies.length).toFixed(1))
+      : 0,
+    fastestDelivery: deliveryCompanies.length > 0
+      ? Math.min(...deliveryCompanies.map(c => {
+          const time = c.delivery_time ? parseInt(c.delivery_time.match(/\d+/)?.[0] || '999') : 999
+          return time
+        }))
+      : 0,
+    verifiedCount: deliveryCompanies.filter(c => c.is_verified).length
   }
+
+  useEffect(() => {
+    fetchDeliveryCompanies()
+  }, [])
 
   useEffect(() => {
     let result = filterCompanies(deliveryCompanies, selectedFilter, searchQuery)
     result = sortCompanies(result, sortBy)
     setFilteredCompanies(result)
-  }, [selectedFilter, searchQuery, sortBy])
+  }, [selectedFilter, searchQuery, sortBy, deliveryCompanies])
+
+  const fetchDeliveryCompanies = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_URL}/delivery-companies`)
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement')
+      }
+      
+      const data = await response.json()
+      
+      // Filtrer uniquement les sociétés actives
+      const activeCompanies = data.filter((company: DeliveryCompany) => company.is_active)
+      
+      setDeliveryCompanies(activeCompanies)
+      setError(null)
+    } catch (err) {
+      console.error('Erreur fetch delivery companies:', err)
+      setError('Impossible de charger les sociétés de livraison')
+      setDeliveryCompanies([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-neutral-25 via-white to-neutral-25 dark:from-dark-bg dark:via-dark-surface/95 dark:to-dark-bg pt-16 pb-20 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <p className="text-neutral-600 dark:text-neutral-400">Chargement des sociétés de livraison...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-neutral-25 via-white to-neutral-25 dark:from-dark-bg dark:via-dark-surface/95 dark:to-dark-bg pt-16 pb-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 flex items-center justify-center">
+            <Truck className="w-10 h-10 text-red-500" strokeWidth={1} />
+          </div>
+          <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 font-sans">
+            {error}
+          </h3>
+          <button
+            onClick={fetchDeliveryCompanies}
+            className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-colors duration-200 font-sans"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-25 via-white to-neutral-25 dark:from-dark-bg dark:via-dark-surface/95 dark:to-dark-bg pt-16 pb-20">
@@ -151,9 +224,7 @@ export default function DeliveryPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCompanies.map((company, index) => (
                 <div key={company.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
-                  <DeliveryCompanyCard
-                    company={company}
-                  />
+                  <DeliveryCompanyCard company={company} />
                 </div>
               ))}
             </div>
