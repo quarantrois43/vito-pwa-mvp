@@ -12,6 +12,9 @@ const categories = [
   { id: 'guides', label: 'Guides' },
 ]
 
+// ✅ TEMPORAIRE : URL hardcodée pour débug
+const API_URL = 'https://vito-backend-supabase.onrender.com/api/v1'
+
 export const DocumentsList: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('pamf')
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null)
@@ -19,14 +22,11 @@ export const DocumentsList: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch documents depuis l'API
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         setLoading(true)
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/documents`
-        )
+        const response = await fetch(`${API_URL}/documents`)  // ✅ CHANGÉ
         
         if (!response.ok) {
           throw new Error('Erreur lors du chargement des documents')
@@ -47,14 +47,12 @@ export const DocumentsList: React.FC = () => {
     fetchDocuments()
   }, [])
 
-  // Filtre les documents par catégorie active
   const filteredDocs = documents.filter(
     (doc) => doc.category === activeCategory && doc.is_active
   )
 
   return (
     <div className="animate-slide-up">
-      {/* Category tabs */}
       <div className="flex gap-2 mb-8 sm:mb-12 pb-2 justify-center">
         {categories.map((category) => (
           <button
@@ -77,7 +75,6 @@ export const DocumentsList: React.FC = () => {
         ))}
       </div>
 
-      {/* Loading state */}
       {loading && (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
@@ -87,7 +84,6 @@ export const DocumentsList: React.FC = () => {
         </div>
       )}
 
-      {/* Error state */}
       {error && !loading && (
         <div className="text-center py-16">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
@@ -99,7 +95,6 @@ export const DocumentsList: React.FC = () => {
         </div>
       )}
 
-      {/* Liste des documents */}
       {!loading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {filteredDocs.map((doc, index) => (
@@ -113,7 +108,6 @@ export const DocumentsList: React.FC = () => {
         </div>
       )}
 
-      {/* Message si vide */}
       {!loading && !error && filteredDocs.length === 0 && (
         <div className="text-center py-16">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center">
@@ -125,7 +119,6 @@ export const DocumentsList: React.FC = () => {
         </div>
       )}
 
-      {/* Viewer PDF Modal */}
       {selectedDoc && (
         <PDFViewer
           document={selectedDoc}
