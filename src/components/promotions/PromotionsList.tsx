@@ -1,23 +1,51 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PromotionCard } from '@/components/promotions/PromotionsCard'
-import { Filter, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react'
+import { Filter, ChevronLeft, ChevronRight, MapPin, X, Loader2, Tag as TagIcon } from 'lucide-react'
 import type { Promotion } from '@/types/promotion'
-import { promotions, filters, zones, sortOptions, ITEMS_PER_PAGE } from '@/data/promotions'
-import { useRouter } from 'next/navigation'
+import { filters, zones, sortOptions, ITEMS_PER_PAGE } from '@/data/promotions'
+
+const API_URL = 'https://vito-backend-supabase.onrender.com/api/v1';
 
 export const PromotionsList: React.FC = () => {
-  const router = useRouter()
+  const [promotions, setPromotions] = useState<Promotion[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState('active')
   const [selectedZones, setSelectedZones] = useState<string[]>([])
   const [sortBy, setSortBy] = useState('discount_desc')
   const [currentPage, setCurrentPage] = useState(1)
   const [showFilters, setShowFilters] = useState(false)
 
+  useEffect(() => {
+    fetchPromotions()
+  }, [])
+
+  const fetchPromotions = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${API_URL}/promotions`)
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement')
+      }
+      
+      const data = await response.json()
+      setPromotions(data)
+      setError(null)
+    } catch (err) {
+      console.error('Erreur fetch promotions:', err)
+      setError('Impossible de charger les promotions')
+      setPromotions([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const filteredPromos = promotions.filter(promo => {
-    if (activeFilter === 'active' && !promo.isActive) return false
-    if (activeFilter === 'expired' && promo.isActive) return false
+    if (activeFilter === 'active' && !promo.is_active) return false
+    if (activeFilter === 'expired' && promo.is_active) return false
     if (selectedZones.length > 0) {
       const hasMatchingZone = selectedZones.some(zone => promo.zones.includes(zone))
       if (!hasMatchingZone) return false
@@ -27,10 +55,10 @@ export const PromotionsList: React.FC = () => {
 
   const sortedPromos = [...filteredPromos].sort((a, b) => {
     switch (sortBy) {
-      case 'discount_desc': return b.discount - a.discount
-      case 'discount_asc': return a.discount - b.discount
-      case 'newest': return new Date(b.validUntil).getTime() - new Date(a.validUntil).getTime()
-      case 'expiring': return new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
+      case 'discount_desc': return b.discount_value - a.discount_value
+      case 'discount_asc': return a.discount_value - b.discount_value
+      case 'newest': return new Date(b.valid_until).getTime() - new Date(a.valid_until).getTime()
+      case 'expiring': return new Date(a.valid_until).getTime() - new Date(b.valid_until).getTime()
       default: return 0
     }
   })
@@ -53,8 +81,34 @@ export const PromotionsList: React.FC = () => {
     setCurrentPage(1)
   }
 
-  const handleViewDetails = (promotionId: string) => {
-    router.push(`/promotions/${promotionId}`)
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <p className="text-neutral-600 dark:text-neutral-400">Chargement des promotions...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 flex items-center justify-center">
+          <TagIcon className="w-10 h-10 text-red-500" strokeWidth={1} />
+        </div>
+        <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3 font-sans">
+          {error}
+        </h3>
+        <button
+          onClick={fetchPromotions}
+          className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-colors duration-200 font-sans"
+        >
+          Réessayer
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -254,6 +308,3 @@ export const PromotionsList: React.FC = () => {
     </div>
   )
 }
-
-// Add this import for the TagIcon used in empty state
-import { Tag as TagIcon } from 'lucide-react'

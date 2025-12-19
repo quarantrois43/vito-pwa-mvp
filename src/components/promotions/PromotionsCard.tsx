@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { Promotion } from '@/types/promotion'
-import { Clock, Tag, Check, ChevronDown, CalendarDays, MapPin, Info, Share } from 'lucide-react'
+import { Clock, Tag, Check, ChevronDown, CalendarDays, Info, Share } from 'lucide-react'
 import { hapticFeedback } from '@/lib/utils/haptic'
 
 interface PromotionCardProps {
@@ -20,7 +20,7 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date().getTime()
-      const end = new Date(promotion.validUntil).getTime()
+      const end = new Date(promotion.valid_until).getTime()
       const diff = end - now
 
       if (diff <= 0) {
@@ -41,12 +41,12 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
     calculateTimeLeft()
     const interval = setInterval(calculateTimeLeft, 1000)
     return () => clearInterval(interval)
-  }, [promotion.validUntil])
+  }, [promotion.valid_until])
 
   const handleCopyCode = () => {
-    if (!promotion.code) return
+    if (!promotion.promo_code) return
     hapticFeedback('medium')
-    navigator.clipboard.writeText(promotion.code)
+    navigator.clipboard.writeText(promotion.promo_code)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -70,7 +70,7 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
   const getTimeColor = () => {
     if (isExpired) return 'text-red-600 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800'
     const now = new Date().getTime()
-    const end = new Date(promotion.validUntil).getTime()
+    const end = new Date(promotion.valid_until).getTime()
     const diff = end - now
     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
     if (days > 7) return 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800'
@@ -78,7 +78,7 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
     return 'text-red-600 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800'
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: Date) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       weekday: 'long',
       year: 'numeric',
@@ -103,24 +103,26 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
       {/* Image */}
       <div className="relative h-64 overflow-hidden">
         <img
-          src={promotion.image}
+          src={promotion.image_url || '/images/promotions/default.jpg'}
           alt={promotion.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
 
-        {promotion.discount > 0 && (
+        {promotion.discount_value > 0 && (
           <div className="absolute top-4 right-4 z-10">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md" />
               <div className="relative bg-primary text-white rounded-xl px-4 py-2">
-                <div className="text-xl font-bold font-sans">-{promotion.discount}%</div>
+                <div className="text-xl font-bold font-sans">
+                  {promotion.discount_type === 'percentage' ? `-${promotion.discount_value}%` : `-${promotion.discount_value} Ar`}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {!promotion.isActive && (
+        {!promotion.is_active && (
           <div className="absolute top-4 left-4 z-10">
             <div className="bg-black/80 backdrop-blur-sm text-white rounded-xl px-3 py-1.5 text-sm font-medium border border-white/20">
               Expirée
@@ -135,6 +137,11 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
           <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2 line-clamp-2 font-sans">
             {promotion.title}
           </h3>
+          {promotion.subtitle && (
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2 font-sans">
+              {promotion.subtitle}
+            </p>
+          )}
           <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 font-sans">
             {promotion.description}
           </p>
@@ -142,7 +149,7 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
 
         {/* Quick info */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {promotion.isActive && !isExpired && (
+          {promotion.is_active && !isExpired && (
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${getTimeColor()} text-sm font-medium border`}>
               <Clock className="w-4 h-4" strokeWidth={1.5} />
               <span className="font-mono text-sm">{timeLeft}</span>
@@ -151,12 +158,12 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
 
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-medium border border-blue-200 dark:border-blue-800">
             <CalendarDays className="w-4 h-4" strokeWidth={1.5} />
-            <span>Jusqu'au {new Date(promotion.validUntil).toLocaleDateString('fr-FR')}</span>
+            <span>Jusqu'au {new Date(promotion.valid_until).toLocaleDateString('fr-FR')}</span>
           </div>
         </div>
 
         {/* Promo code */}
-        {promotion.code && (
+        {promotion.promo_code && (
           <div className="mb-4">
             <div className="flex items-center justify-between gap-2 mb-2">
               <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 font-sans">
@@ -180,7 +187,7 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
                     </div>
                     <div className="text-left">
                       <div className="text-xl font-semibold text-primary font-mono">
-                        {promotion.code}
+                        {promotion.promo_code}
                       </div>
                       <div className="text-xs text-primary/70 font-sans">
                         Cliquez pour copier
@@ -258,41 +265,53 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ promotion, delay =
                 </div>
               </div>
               <div className="space-y-2">
+                {promotion.valid_from && (
+                  <div className="flex justify-between items-center py-2 border-b border-neutral-100 dark:border-neutral-800">
+                    <span className="text-sm text-neutral-600 dark:text-neutral-400 font-sans">Début</span>
+                    <span className="font-medium text-neutral-900 dark:text-white font-sans">
+                      {formatDate(promotion.valid_from)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center py-2 border-b border-neutral-100 dark:border-neutral-800">
                   <span className="text-sm text-neutral-600 dark:text-neutral-400 font-sans">Fin</span>
                   <span className="font-medium text-neutral-900 dark:text-white font-sans">
-                    {formatDate(promotion.validUntil)}
+                    {formatDate(promotion.valid_until)}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Conditions */}
-            <div className="bg-white dark:bg-dark-surface rounded-xl p-4 border border-neutral-200 dark:border-neutral-800">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <h5 className="font-semibold text-neutral-900 dark:text-white font-sans">
-                    Conditions
-                  </h5>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 font-sans">
-                    Règles d'application
-                  </p>
-                </div>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
+            {promotion.conditions.length > 0 && (
+              <div className="bg-white dark:bg-dark-surface rounded-xl p-4 border border-neutral-200 dark:border-neutral-800">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
                   </div>
-                  <span className="text-sm text-neutral-700 dark:text-neutral-300 font-sans">
-                    Réduction de {promotion.discount}% sur le produit concerné
-                  </span>
-                </li>
-              </ul>
-            </div>
+                  <div>
+                    <h5 className="font-semibold text-neutral-900 dark:text-white font-sans">
+                      Conditions
+                    </h5>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 font-sans">
+                      Règles d'application
+                    </p>
+                  </div>
+                </div>
+                <ul className="space-y-2">
+                  {promotion.conditions.map((condition, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
+                      </div>
+                      <span className="text-sm text-neutral-700 dark:text-neutral-300 font-sans">
+                        {condition}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
