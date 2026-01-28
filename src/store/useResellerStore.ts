@@ -20,8 +20,16 @@ export const useResellerStore = create<ResellerState>((set) => ({
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
-      console.log('✅ Resellers chargés depuis l API:', data.length)
-      set({ resellers: data, loading: false })
+      
+      // Mapper les données du backend vers le format frontend
+      const mappedResellers = data.map((r: any) => ({
+        ...r,
+        lat: r.latitude,
+        lng: r.longitude
+      }))
+      
+      console.log('✅ Resellers chargés depuis l API:', mappedResellers.length)
+      set({ resellers: mappedResellers, loading: false })
     } catch (error) {
       console.error('❌ Erreur chargement resellers:', error)
       set({ error: 'Erreur de chargement des revendeurs', loading: false })
