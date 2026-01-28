@@ -187,7 +187,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
 
         const map = new Map(mapRef.current, {
           center: getDefaultCenter(),
-          zoom: 12,
+          zoom: 14,
           styles: [
             {
               featureType: 'poi',
