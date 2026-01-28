@@ -53,7 +53,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
 
     mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
       center: userLocation || defaultCenter,
-      zoom: userLocation ? 13 : 12,
+      zoom: userLocation ? 14 : 14, // Changé de 13/12 à 14 pour ~5km de rayon
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: true,
@@ -91,6 +91,7 @@ export const ResellerMap: React.FC<ResellerMapProps> = ({
     })
 
     mapInstanceRef.current.panTo(userLocation)
+    mapInstanceRef.current.setZoom(14) // Ajouté pour maintenir le zoom à 14
   }, [userLocation])
 
   // Ajouter marqueurs revendeurs
